@@ -398,6 +398,11 @@ func (d *Driver) Remove(id string) error {
 		delete(d.filesystemsCache, name)
 		d.Unlock()
 	}
+
+	if zfsError, ok := err.(*zfs.Error); ok && strings.HasSuffix(zfsError.Stderr, "dataset does not exist\n") {
+		return os.ErrNotExist
+	}
+
 	return err
 }
 
